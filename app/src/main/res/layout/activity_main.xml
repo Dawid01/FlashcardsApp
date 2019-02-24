@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
+    tools:context=".MainActivity">
+
+    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?android:attr/listDivider"
+                tools:layout_editor_absoluteX="17dp"
+                tools:layout_editor_absoluteY="50dp" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floatingActionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                app:backgroundTint="@color/design_default_color_primary_dark"
+                app:fabSize="mini"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.975"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.984"
+                app:srcCompat="@drawable/add_icon" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                tools:layout_editor_absoluteX="0dp"
+                tools:layout_editor_absoluteY="0dp">
+
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="350dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp">
+
+                    <EditText
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/share_background"
+                        android:hint="Share"
+                        android:inputType="text"
+                        android:paddingLeft="60dp"
+                        android:paddingTop="5dp"
+                        android:singleLine="false"
+                        android:textAlignment="textStart"
+                        android:textColor="@android:color/background_light"
+                        android:textColorHint="#F6F6F6"
+                        android:textSize="18dp"
+                        android:textStyle="bold"
+                        tools:layout_editor_absoluteX="17dp"
+                        tools:layout_editor_absoluteY="587dp" />
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/textView"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/textView"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.52"
+                        app:srcCompat="@drawable/share_icon" />
+                </android.support.constraint.ConstraintLayout>
+
+            </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@color/backgroundColor"
+            android:fitsSystemWindows="true"
+            app:headerLayout="@layout/drawer_up">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="140dp"
+                android:background="@color/backgroundColor"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/newNameField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTintMode="src_atop"
+                    android:paddingBottom="0dp"
+                    android:textColorHint="@android:color/background_light"
+                    android:theme="@style/TextLabel"
+                    app:boxStrokeColor="@color/colorPrimary"
+                    app:errorTextAppearance="@style/error"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.51"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/newNameText"
+                        android:layout_width="250dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/input_field"
+                        android:drawableEnd="@drawable/text_icon"
+                        android:hint="new nickname"
+                        android:inputType="textEmailAddress"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:textColor="@color/colorPrimary" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <Button
+                    android:id="@+id/changeName"
+                    android:layout_width="170dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/login_button"
+                    android:paddingTop="5dp"
+                    android:text="change"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="20sp" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/newPassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTintMode="src_atop"
+                    android:paddingBottom="0dp"
+                    android:textColorHint="@android:color/background_light"
+                    android:theme="@style/TextLabel"
+                    app:boxStrokeColor="@color/colorPrimary"
+                    app:errorTextAppearance="@style/error"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.51"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/newPassText"
+                        android:layout_width="250dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/input_field"
+                        android:drawableEnd="@drawable/text_icon"
+                        android:hint="new password"
+                        android:inputType="textEmailAddress"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:textColor="@color/colorPrimary" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/newConfPassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTintMode="src_atop"
+                    android:paddingBottom="0dp"
+                    android:textColorHint="@android:color/background_light"
+                    android:theme="@style/TextLabel"
+                    app:boxStrokeColor="@color/colorPrimary"
+                    app:errorTextAppearance="@style/error"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.51"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/newConfPassText"
+                        android:layout_width="250dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/input_field"
+                        android:drawableEnd="@drawable/text_icon"
+                        android:hint="new confirm password"
+                        android:inputType="textEmailAddress"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:textColor="@color/colorPrimary" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <Button
+                    android:id="@+id/changePassword"
+                    android:layout_width="170dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/login_button"
+                    android:paddingTop="5dp"
+                    android:text="change"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/logout"
+                    android:layout_width="170dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/login_button"
+                    android:paddingTop="5dp"
+                    android:text="logout"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+        </android.support.design.widget.NavigationView>
+
+    </android.support.v4.widget.DrawerLayout>
+
+</android.support.constraint.ConstraintLayout>
