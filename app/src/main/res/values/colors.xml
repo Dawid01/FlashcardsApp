@@ -2,7 +2,8 @@
 <resources>
     <color name="colorPrimary">#5F5FC3</color>
     <color name="colorPrimaryDark">#5F5FC3</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#8989ff</color>
     <color name="backgroundColor">#474444</color>
     <color name="colorBar">#303f9f</color>
+    <color name="lightBackgroundColor">#E3E3E3</color>
 </resources>

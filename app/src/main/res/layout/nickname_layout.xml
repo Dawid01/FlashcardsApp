@@ -20,6 +20,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <ImageView
+                android:id="@+id/up2"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/popup_up_line" />
+
             <Button
                 android:id="@+id/nextButton"
                 android:layout_width="170dp"
@@ -46,6 +58,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="50dp"
                 android:backgroundTintMode="src_atop"
+                android:paddingTop="25dp"
                 android:paddingBottom="0dp"
                 android:textColorHint="@android:color/background_light"
                 android:theme="@style/TextLabel"
