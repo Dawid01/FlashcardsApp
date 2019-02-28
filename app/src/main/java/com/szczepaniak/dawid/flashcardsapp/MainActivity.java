@@ -11,10 +11,6 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.telecom.Call;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,9 +18,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Callback;
@@ -37,10 +30,7 @@ public class MainActivity extends AppCompatActivity {
     TextView nicknameText;
     TextView emailText;
     LinearLayout flashcardsLayout;
-    private ArrayList<Flashcard> flashcardArrayList;
-    retrofit2.Call<FlashcardsList> flashcardsListCall;
-
-    retrofit2.Call<Flashcard> flashcardCall;
+    ApiService api;
 
     private ProgressDialog pDialog;
 
@@ -65,16 +55,31 @@ public class MainActivity extends AppCompatActivity {
         nicknameText = headerLayout.findViewById(R.id.nickname);
         emailText = headerLayout.findViewById(R.id.email);
         flashcardsLayout = findViewById(R.id.flashcardsLayout);
-        ApiService api = RetroClient.getApiService();
-        flashcardsListCall = api.getFlashcards();
-        //flashcardCall = api.getFlashcard(0L);
-        //loadUser();
+        api = RetroClient.getApiService();
+        loadUser();
         loadFlashcards();
     }
 
     private void loadUser(){
 
+        retrofit2.Call<User> userCall = api.getUser(1L);
 
+        userCall.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(retrofit2.Call<User> call, Response<User> response) {
+                if (response.isSuccessful()){
+
+                    nicknameText.setText(response.body().getName());
+                    emailText.setText(response.body().getEmail());
+
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<User> call, Throwable t) {
+                Log.e("flash","ERROR", t);
+            }
+        });
     }
 
     private void loadFlashcards() {
@@ -86,20 +91,7 @@ public class MainActivity extends AppCompatActivity {
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
         pDialog.show();
-
-//        flashcardCall.enqueue(new Callback<Flashcard>() {
-//            @Override
-//            public void onResponse(retrofit2.Call<Flashcard> call, Response<Flashcard> response) {
-//                Log.i("flashcard", response.body().getTitle());
-//                Log.i("flashcard", response.body().getDescription());
-//            }
-//
-//            @Override
-//            public void onFailure(retrofit2.Call<Flashcard> call, Throwable t) {
-//                Log.e("flash","something happend", t);
-//            }
-//        });
-
+        retrofit2.Call<FlashcardsList> flashcardsListCall = api.getFlashcards();
         flashcardsListCall.enqueue(new Callback<FlashcardsList>() {
             @Override
             public void onResponse(retrofit2.Call<FlashcardsList> call, Response<FlashcardsList> response) {
@@ -110,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
                         for (int i = 0; i < flashcardList.size(); i++) {
 
-                            Flashcard flashcard = flashcardList.get(i);
+                            final Flashcard flashcard = flashcardList.get(i);
                             String title = flashcard.getTitle();
                             String description = flashcard.getDescription();
                             int flashcardsCount = flashcard.getFlashcards();
@@ -128,6 +120,60 @@ public class MainActivity extends AppCompatActivity {
                             knowsFlashcardsText.setText("" + knowsFlashcards);
                             flashcardsLayout.addView(flashcardItem);
 
+                            flashcardItem.setOnLongClickListener(new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View v) {
+
+                                    final PopUpBlur deletePopup;
+                                    View popUpView = getLayoutInflater().inflate(R.layout.delete_flashcard_popup,
+                                            null);
+                                    deletePopup = new PopUpBlur(popUpView, LinearLayout.LayoutParams.MATCH_PARENT,
+                                            LinearLayout.LayoutParams.MATCH_PARENT, true, MainActivity.this);
+                                    deletePopup.setAnimationStyle(android.R.style.Animation_Dialog);
+                                    View window = findViewById(R.id.container);
+                                    window.setDrawingCacheEnabled(true);
+                                    Bitmap screenShot = deletePopup.blur(Bitmap.createBitmap(window.getDrawingCache()), 25);
+                                    window.setDrawingCacheEnabled(false);
+                                    Drawable blurBitmap = new BitmapDrawable(getResources(), screenShot);
+                                    deletePopup.showAtLocation(popUpView, Gravity.CENTER, 0, 0);
+                                    ConstraintLayout background = popUpView.findViewById(R.id.background);
+                                    background.setBackground(blurBitmap);
+
+                                    Button delete = popUpView.findViewById(R.id.deleteButton);
+                                    Button cancel = popUpView.findViewById(R.id.cancelButton);
+
+                                    delete.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            retrofit2.Call<Flashcard> deleteFlashcard = api.deleteFlashcard(flashcard.getId());
+
+                                            deleteFlashcard.enqueue(new Callback<Flashcard>() {
+                                                @Override
+                                                public void onResponse(retrofit2.Call<Flashcard> call, Response<Flashcard> response) {
+                                                    loadFlashcards();
+                                                    deletePopup.dismiss();
+                                                }
+
+                                                @Override
+                                                public void onFailure(retrofit2.Call<Flashcard> call, Throwable t) {
+                                                    Log.e("flash","ERROR", t);
+                                                }
+                                            });
+                                        }
+                                    });
+
+                                    cancel.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            deletePopup.dismiss();
+                                        }
+                                    });
+
+
+                                    return false;
+                                }
+                            });
+
 
                     }
                 }
@@ -136,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(retrofit2.Call<FlashcardsList> call, Throwable t) {
                 pDialog.dismiss();
-                Log.e("flash","something happend", t);
+                Log.e("flash","ERROR", t);
             }
         });
     }
@@ -144,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void createFlashcardsPopUp()
     {
-        PopUpBlur createFlashcardsPopUp;
+        final PopUpBlur createFlashcardsPopUp;
         View popUpView = getLayoutInflater().inflate(R.layout.create_flashcards_popup,
                 null);
         createFlashcardsPopUp = new PopUpBlur(popUpView, LinearLayout.LayoutParams.MATCH_PARENT,
@@ -168,6 +214,46 @@ public class MainActivity extends AppCompatActivity {
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                Flashcard newFlashcard = new Flashcard();
+                newFlashcard.setTitle(title.getText().toString());
+                newFlashcard.setDescription(description.getText().toString());
+                newFlashcard.setFlashcards(0);
+                newFlashcard.setKnowsFlashcards(0);
+
+                retrofit2.Call<Flashcard> flashcardCall = api.postFlashcard(newFlashcard);
+
+                flashcardCall.enqueue(new Callback<Flashcard>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<Flashcard> call, Response<Flashcard> response) {
+                        if (response.isSuccessful()){
+
+                            Flashcard flashcard = response.body();
+                            String title = flashcard.getTitle();
+                            String description = flashcard.getDescription();
+                            int flashcardsCount = flashcard.getFlashcards();
+                            int knowsFlashcards = flashcard.getKnowsFlashcards();
+
+                            LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                            ConstraintLayout flashcardItem = (ConstraintLayout) inflater.inflate(R.layout.flashcards_list_item, null, false);
+                            TextView titleText = flashcardItem.findViewById(R.id.name);
+                            titleText.setText(title);
+                            TextView descriptionText = flashcardItem.findViewById(R.id.description);
+                            descriptionText.setText(description);
+                            TextView flashcardsText = flashcardItem.findViewById(R.id.flashcards);
+                            flashcardsText.setText("" + flashcardsCount);
+                            TextView knowsFlashcardsText = flashcardItem.findViewById(R.id.youKnow);
+                            knowsFlashcardsText.setText("" + knowsFlashcards);
+                            flashcardsLayout.addView(flashcardItem);
+                            createFlashcardsPopUp.dismiss();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(retrofit2.Call<Flashcard> call, Throwable t) {
+                        Log.e("flash","ERROR", t);
+                    }
+                });
 
 
             }

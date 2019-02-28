@@ -3,7 +3,10 @@ package com.szczepaniak.dawid.flashcardsapp;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface ApiService {
@@ -13,5 +16,14 @@ public interface ApiService {
 
     @GET("flashcards/{id}")
     Call<Flashcard> getFlashcard(@Path("id") Long id);
+
+    @POST("flashcards")
+    Call<Flashcard> postFlashcard(@Body Flashcard flashcard);
+
+    @DELETE("flashcards/{id}")
+    Call<Flashcard> deleteFlashcard(@Path("id") Long id);
+
+    @GET("users/{id}")
+    Call<User> getUser(@Path("id") Long id);
 
 }
