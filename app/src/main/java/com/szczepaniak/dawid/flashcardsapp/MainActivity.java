@@ -50,37 +50,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         drawer = findViewById(R.id.drawer);
-
-        View headerLayout = drawer.getHeaderView(0);
-        nicknameText = headerLayout.findViewById(R.id.nickname);
-        emailText = headerLayout.findViewById(R.id.email);
         flashcardsLayout = findViewById(R.id.flashcardsLayout);
         api = RetroClient.getApiService();
-        loadUser();
+        new AccountDrawer(drawer);
         loadFlashcards();
     }
 
-    private void loadUser(){
 
-        retrofit2.Call<User> userCall = api.getUser(1L);
-
-        userCall.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(retrofit2.Call<User> call, Response<User> response) {
-                if (response.isSuccessful()){
-
-                    nicknameText.setText(response.body().getName());
-                    emailText.setText(response.body().getEmail());
-
-                }
-            }
-
-            @Override
-            public void onFailure(retrofit2.Call<User> call, Throwable t) {
-                Log.e("flash","ERROR", t);
-            }
-        });
-    }
 
     private void loadFlashcards() {
 
@@ -119,6 +95,14 @@ public class MainActivity extends AppCompatActivity {
                             TextView knowsFlashcardsText = flashcardItem.findViewById(R.id.youKnow);
                             knowsFlashcardsText.setText("" + knowsFlashcards);
                             flashcardsLayout.addView(flashcardItem);
+
+                            flashcardItem.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                    
+                                }
+                            });
 
                             flashcardItem.setOnLongClickListener(new View.OnLongClickListener() {
                                 @Override

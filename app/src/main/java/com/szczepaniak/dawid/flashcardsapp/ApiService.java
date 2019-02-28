@@ -7,6 +7,7 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface ApiService {
@@ -25,5 +26,9 @@ public interface ApiService {
 
     @GET("users/{id}")
     Call<User> getUser(@Path("id") Long id);
+
+    @PUT("users/{id}")
+    Call<User> putUser(@Path("id") Long id, @Body User user);
+
 
 }
