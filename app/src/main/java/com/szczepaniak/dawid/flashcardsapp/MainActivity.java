@@ -2,6 +2,7 @@ package com.szczepaniak.dawid.flashcardsapp;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         flashcardsLayout.removeAllViews();
 
         pDialog = new ProgressDialog(MainActivity.this);
-        pDialog.setMessage("Loading Data.. Please wait...");
+        pDialog.setMessage("Loading flashcards");
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
         pDialog.show();
@@ -100,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(View v) {
 
-                                    
+                                    Intent flaschardActivity =  new Intent(MainActivity.this, FlashcardActivity.class);
+                                    startActivity(flaschardActivity);
                                 }
                             });
 
