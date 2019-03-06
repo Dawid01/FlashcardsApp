@@ -2,15 +2,20 @@ package com.szczepaniak.dawid.flashcardsapp;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -24,21 +29,22 @@ public class FlashcardActivity extends AppCompatActivity {
 
     private ArrayList<FlashcardItem> flashcardItems;
     private LinearLayout flashcardsItemLayout;
+    private TabLayout tabLayout;
     private int flashcardIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flashcard);
-
+        tabLayout = findViewById(R.id.tabLayout);
         flashcardItems = new ArrayList<>();
         flashcardsItemLayout = findViewById(R.id.flashcardLayout);
-        flashcardItems.add(new FlashcardItem("Key", "Klucz", "Don't forgot to take the key!", "Nie zapomnij wziąć klucz!"));
-        flashcardItems.add(new FlashcardItem("Car", "Samochód", "Yesterday I bought a new car.", "Wczoraj kupiłem nowy samochód."));
-        flashcardItems.add(new FlashcardItem("Phone", "Telefon", "Yesterday I bought a new Phone.", "Wczoraj kupiłem nowy telefon."));
-        flashcardItems.add(new FlashcardItem("Computer", "Komputer", "Yesterday I bought a new Computer.", "Wczoraj kupiłem nowy komputer."));
-        flashcardItems.add(new FlashcardItem("Tree", "Drzewo", "The lumberjack cut the tree.", "Drwal ściął drzewo."));
-        flashcardItems.add(new FlashcardItem("Chives", "Szczypiorek", "These chives are too dry.", "Ten szczypiorek jest zbyt suchy."));
+        flashcardItems.add(new FlashcardItem("Key", "Klucz", "Don't forgot to take the key!", "Nie zapomnij wziąć klucz!", true));
+        flashcardItems.add(new FlashcardItem("Car", "Samochód", "Yesterday I bought a new car.", "Wczoraj kupiłem nowy samochód.", false));
+        flashcardItems.add(new FlashcardItem("Phone", "Telefon", "Yesterday I bought a new Phone.", "Wczoraj kupiłem nowy telefon.", true));
+        flashcardItems.add(new FlashcardItem("Computer", "Komputer", "Yesterday I bought a new Computer.", "Wczoraj kupiłem nowy komputer.", false));
+        flashcardItems.add(new FlashcardItem("Tree", "Drzewo", "The lumberjack cut the tree.", "Drwal ściął drzewo.", true));
+        flashcardItems.add(new FlashcardItem("Chives", "Szczypiorek", "These chives are too dry.", "Ten szczypiorek jest zbyt suchy.", false));
 //        flashcardItems.add(new FlashcardItem("To take a closer look", "Przyjrzeć się czemuś", "When you take a closer look it tums out he's not that happy", "Kiedy się bliżej przyjrzysz, okazuje się, że nie jest taki szczęśliwy"));
 
         loadFlashcard(flashcardIndex);
@@ -76,6 +82,20 @@ public class FlashcardActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                final PopUpBlur addFlashcardsPopUp;
+                View popUpView = getLayoutInflater().inflate(R.layout.add_flashcard_popup,
+                        null);
+                addFlashcardsPopUp = new PopUpBlur(popUpView, LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT, true, FlashcardActivity.this);
+                addFlashcardsPopUp.setAnimationStyle(android.R.style.Animation_Dialog);
+                View window = findViewById(R.id.container);
+                window.setDrawingCacheEnabled(true);
+                Bitmap screenShot = addFlashcardsPopUp.blur(Bitmap.createBitmap(window.getDrawingCache()), 25);
+                window.setDrawingCacheEnabled(false);
+                Drawable blurBitmap = new BitmapDrawable(getResources(), screenShot);
+                addFlashcardsPopUp.showAtLocation(popUpView, Gravity.CENTER, 0, 0);
+                ConstraintLayout background = popUpView.findViewById(R.id.background);
+                background.setBackground(blurBitmap);
             }
         });
 

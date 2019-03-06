@@ -6,21 +6,21 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.widget.TextView;
 
 public class FlashcardItem {
 
-    String firstWord;
-    String secondWord;
+    private String firstWord;
+    private String secondWord;
+    private String firstDescription;
+    private String secondDescription;
+    private boolean know;
 
-    String firstDescription;
-    String secondDescription;
-
-    public FlashcardItem(String firstWord, String secondWord, String firstDescription, String secondDescription) {
+    public FlashcardItem(String firstWord, String secondWord, String firstDescription, String secondDescription, boolean know) {
         this.firstWord = firstWord;
         this.secondWord = secondWord;
         this.firstDescription = firstDescription;
         this.secondDescription = secondDescription;
+        this.know = know;
     }
 
 
@@ -56,7 +56,13 @@ public class FlashcardItem {
         this.secondDescription = secondDescription;
     }
 
+    public boolean isKnow() {
+        return know;
+    }
 
+    public void setKnow(boolean know) {
+        this.know = know;
+    }
 
     public SpannableString getPaintedText(String text, String keyWord){
 

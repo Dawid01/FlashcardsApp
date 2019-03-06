@@ -1,15 +1,21 @@
 package com.szczepaniak.dawid.flashcardsapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class LoginActivity extends AppCompatActivity{
@@ -20,6 +26,9 @@ public class LoginActivity extends AppCompatActivity{
     private TextInputEditText passText;
     private TextInputLayout passInputLayout;
     private Button loginButton;
+    ApiService apiService;
+    private ProgressDialog pDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +41,7 @@ public class LoginActivity extends AppCompatActivity{
         passText = findViewById(R.id.passwordText);
         passInputLayout = findViewById(R.id.passwordField);
         loginButton = findViewById(R.id.loginButton);
+        apiService = RetroClient.getApiService();
 
         TextView singUp = findViewById(R.id.singUpText);
         singUp.setOnClickListener(new View.OnClickListener() {
@@ -59,6 +69,7 @@ public class LoginActivity extends AppCompatActivity{
         emailInputLayout.setErrorEnabled(false);
         passInputLayout.setErrorEnabled(false);
 
+
         if(email.equals("")){
             emailInputLayout.setError("You need to enter a email");
         }
@@ -67,8 +78,32 @@ public class LoginActivity extends AppCompatActivity{
 
         }else{
 
-            Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(mainIntent);
+            pDialog = new ProgressDialog(LoginActivity.this);
+            pDialog.setMessage("Login...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+            String base = email + ":" + password;
+            String authHeader = "Basic " + Base64.encodeToString(base.getBytes(), Base64.NO_WRAP);
+            Call<User> userCall = apiService.loginUser(authHeader);
+
+            userCall.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    pDialog.dismiss();
+                    if(response.isSuccessful()) {
+                        Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(mainIntent);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    pDialog.dismiss();
+                    Log.e("login","ERROR", t);
+                }
+            });
+
             //finish();
         }
     }
