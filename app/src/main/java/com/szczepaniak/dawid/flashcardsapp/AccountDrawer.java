@@ -19,6 +19,7 @@ public class AccountDrawer {
     private TextView emailText;
     private Button changeNickname;
     private TextInputEditText newNicknameText;
+    Singleton singleton;
 
     public AccountDrawer(NavigationView drawer) {
         this.drawer = drawer;
@@ -28,13 +29,15 @@ public class AccountDrawer {
         api = RetroClient.getApiService();
         changeNickname = drawer.findViewById(R.id.changeName);
         newNicknameText = drawer.findViewById(R.id.newNameText);
+        singleton = Singleton.getInstance();
+
         loadUser();
     }
 
 
     private void loadUser() {
 
-        retrofit2.Call<User> userCall = api.getUser(1L);
+        retrofit2.Call<User> userCall = api.getCurrentUser();
 
         userCall.enqueue(new Callback<User>() {
             @Override

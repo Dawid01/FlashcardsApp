@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity{
     private Button loginButton;
     ApiService apiService;
     private ProgressDialog pDialog;
+    Singleton singleton;
 
 
     @Override
@@ -42,6 +43,7 @@ public class LoginActivity extends AppCompatActivity{
         passInputLayout = findViewById(R.id.passwordField);
         loginButton = findViewById(R.id.loginButton);
         apiService = RetroClient.getApiService();
+        singleton = Singleton.getInstance();
 
         TextView singUp = findViewById(R.id.singUpText);
         singUp.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +94,7 @@ public class LoginActivity extends AppCompatActivity{
                 public void onResponse(Call<User> call, Response<User> response) {
                     pDialog.dismiss();
                     if(response.isSuccessful()) {
+                        singleton.setCurrentUser(response.body());
                         Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(mainIntent);
                     }
