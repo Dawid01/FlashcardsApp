@@ -28,6 +28,8 @@ import java.util.ArrayList;
 public class FlashcardActivity extends AppCompatActivity {
 
     private ArrayList<FlashcardItem> flashcardItems;
+    private ArrayList<FlashcardItem> currentFlashcardItems;
+
     private LinearLayout flashcardsItemLayout;
     private TabLayout tabLayout;
     private int flashcardIndex = 0;
@@ -46,8 +48,53 @@ public class FlashcardActivity extends AppCompatActivity {
         flashcardItems.add(new FlashcardItem("Tree", "Drzewo", "The lumberjack cut the tree.", "Drwal ściął drzewo.", true));
         flashcardItems.add(new FlashcardItem("Chives", "Szczypiorek", "These chives are too dry.", "Ten szczypiorek jest zbyt suchy.", false));
 //        flashcardItems.add(new FlashcardItem("To take a closer look", "Przyjrzeć się czemuś", "When you take a closer look it tums out he's not that happy", "Kiedy się bliżej przyjrzysz, okazuje się, że nie jest taki szczęśliwy"));
-
+        currentFlashcardItems = new ArrayList<>();
+        currentFlashcardItems = flashcardItems;
         loadFlashcard(flashcardIndex);
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                String tabName = tab.getText().toString();
+
+                switch (tabName){
+
+                    case "all":
+                        currentFlashcardItems = flashcardItems;
+                        break;
+                    case "lerned":
+                        currentFlashcardItems = new ArrayList<>();
+                        for(FlashcardItem flashcard : flashcardItems){
+                            if(flashcard.isKnow()){
+                                currentFlashcardItems.add(flashcard);
+                            }
+                        }
+
+                        break;
+                    case "unlerned":
+                        currentFlashcardItems = new ArrayList<>();
+                        for(FlashcardItem flashcard : flashcardItems){
+                            if(!flashcard.isKnow()){
+                                currentFlashcardItems.add(flashcard);
+                            }
+                        }
+                        break;
+                }
+
+                loadFlashcard(0);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         Button know = findViewById(R.id.knowButton);
         Button dontKnow = findViewById(R.id.dontKnowButton);
@@ -58,8 +105,8 @@ public class FlashcardActivity extends AppCompatActivity {
                 loadFlashcard(++flashcardIndex);
                 if(flashcardIndex < 0){
                     flashcardIndex = 0;
-                }else if(flashcardIndex > flashcardItems.size()-1){
-                    flashcardIndex = flashcardItems.size()-1;
+                }else if(flashcardIndex > currentFlashcardItems.size()-1){
+                    flashcardIndex = currentFlashcardItems.size()-1;
                 }
             }
         });
@@ -70,8 +117,8 @@ public class FlashcardActivity extends AppCompatActivity {
                 loadFlashcard(--flashcardIndex);
                 if(flashcardIndex < 0){
                     flashcardIndex = 0;
-                }else if(flashcardIndex > flashcardItems.size()-1){
-                    flashcardIndex = flashcardItems.size()-1;
+                }else if(flashcardIndex > currentFlashcardItems.size()-1){
+                    flashcardIndex = currentFlashcardItems.size()-1;
                 }
             }
         });
@@ -105,7 +152,7 @@ public class FlashcardActivity extends AppCompatActivity {
     void loadFlashcard(int i) {
 
         try {
-            FlashcardItem flashcardItem = flashcardItems.get(i);
+            FlashcardItem flashcardItem = currentFlashcardItems.get(i);
             flashcardsItemLayout.removeAllViews();
             LayoutInflater inflater = LayoutInflater.from(FlashcardActivity.this);
             ConstraintLayout flashcard = (ConstraintLayout) inflater.inflate(R.layout.flashcard, null, false);
@@ -119,7 +166,7 @@ public class FlashcardActivity extends AppCompatActivity {
             TextView firstIndex = flashcard.findViewById(R.id.firstIndex);
             TextView secondIndex = flashcard.findViewById(R.id.secondIndex);
 
-            String index = (flashcardItems.indexOf(flashcardItem) + 1) + "/" + flashcardItems.size();
+            String index = (currentFlashcardItems.indexOf(flashcardItem) + 1) + "/" + currentFlashcardItems.size();
             firstIndex.setText(index);
             secondIndex.setText(index);
 

@@ -33,7 +33,7 @@ public interface ApiService {
 
     @GET("users")
     Call<User> loginUser(@Header("Authorization") String authHeader);
-    
+
     @GET("users/current/")
     Call<User> getCurrentUser();
 }

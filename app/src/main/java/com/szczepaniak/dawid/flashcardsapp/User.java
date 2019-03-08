@@ -21,6 +21,10 @@ public class User {
     @Expose
     private String password;
 
+    @SerializedName("flashcards")
+    @Expose
+    private String flashcards;
+
     public Long getId() {
         return id;
     }
@@ -51,5 +55,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getFlashcards() {
+        return flashcards;
+    }
+
+    public void setFlashcards(String flashcards) {
+        this.flashcards = flashcards;
     }
 }
