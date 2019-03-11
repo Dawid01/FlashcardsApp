@@ -43,4 +43,7 @@ public interface ApiService {
 
     @GET("flashcardItems/{id}")
     Call<FlashcardItemsList> getFlashcardItems(@Path("id") Long id);
+
+    @POST("flashcardItems/{id}")
+    Call<FlashcardItem> postFlashcardItem(@Body FlashcardItem flashcardItem, @Path("id") Long i);
 }
