@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < flashcardList.size(); i++) {
 
                             final Flashcard flashcard = flashcardList.get(i);
+                            final long index = flashcard.getId();
                             String title = flashcard.getTitle();
                             String description = flashcard.getDescription();
                             int flashcardsCount = flashcard.getFlashcards();
@@ -102,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void onClick(View v) {
 
                                     Intent flaschardActivity =  new Intent(MainActivity.this, FlashcardActivity.class);
+                                    flaschardActivity.putExtra("FlashcardIndex", index);
                                     startActivity(flaschardActivity);
                                 }
                             });

@@ -15,6 +15,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,32 +25,74 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FlashcardActivity extends AppCompatActivity {
 
-    private ArrayList<FlashcardItem> flashcardItems;
-    private ArrayList<FlashcardItem> currentFlashcardItems;
+    private List<FlashcardItem> flashcardItems;
+    private List<FlashcardItem> currentFlashcardItems;
 
     private LinearLayout flashcardsItemLayout;
     private TabLayout tabLayout;
     private int flashcardIndex = 0;
+    private ApiService api;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flashcard);
         tabLayout = findViewById(R.id.tabLayout);
-        flashcardItems = new ArrayList<>();
         flashcardsItemLayout = findViewById(R.id.flashcardLayout);
-        flashcardItems.add(new FlashcardItem("Key", "Klucz", "Don't forgot to take the key!", "Nie zapomnij wziąć klucz!", true));
-        flashcardItems.add(new FlashcardItem("Car", "Samochód", "Yesterday I bought a new car.", "Wczoraj kupiłem nowy samochód.", false));
-        flashcardItems.add(new FlashcardItem("Phone", "Telefon", "Yesterday I bought a new Phone.", "Wczoraj kupiłem nowy telefon.", true));
-        flashcardItems.add(new FlashcardItem("Computer", "Komputer", "Yesterday I bought a new Computer.", "Wczoraj kupiłem nowy komputer.", false));
-        flashcardItems.add(new FlashcardItem("Tree", "Drzewo", "The lumberjack cut the tree.", "Drwal ściął drzewo.", true));
-        flashcardItems.add(new FlashcardItem("Chives", "Szczypiorek", "These chives are too dry.", "Ten szczypiorek jest zbyt suchy.", false));
-//        flashcardItems.add(new FlashcardItem("To take a closer look", "Przyjrzeć się czemuś", "When you take a closer look it tums out he's not that happy", "Kiedy się bliżej przyjrzysz, okazuje się, że nie jest taki szczęśliwy"));
-        currentFlashcardItems = new ArrayList<>();
-        currentFlashcardItems = flashcardItems;
+        flashcardItems = new ArrayList<>();
+        api = RetroClient.getApiService();
+
+        Bundle bundle = getIntent().getExtras();
+        Long flashcardId = bundle.getLong("FlashcardIndex");
+
+
+
+        Call<FlashcardItemsList> flashcardItemsListCall = api.getFlashcardItems(flashcardId);
+
+        flashcardItemsListCall.enqueue(new Callback<FlashcardItemsList>() {
+            @Override
+            public void onResponse(Call<FlashcardItemsList> call, Response<FlashcardItemsList> response) {
+
+                if(response.isSuccessful()){
+
+                    flashcardItems = response.body().getFlashcardItemsList();
+                    currentFlashcardItems = new ArrayList<>();
+                    currentFlashcardItems = flashcardItems;
+                    loadUISystem();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FlashcardItemsList> call, Throwable t) {
+                Log.e("flashcardItem","ERROR", t);
+            }
+        });
+
+//        flashcardsItemLayout = findViewById(R.id.flashcardLayout);
+//        flashcardItems.add(new FlashcardItem("Key", "Klucz", "Don't forgot to take the key!", "Nie zapomnij wziąć klucz!", true));
+//        flashcardItems.add(new FlashcardItem("Car", "Samochód", "Yesterday I bought a new car.", "Wczoraj kupiłem nowy samochód.", false));
+//        flashcardItems.add(new FlashcardItem("Phone", "Telefon", "Yesterday I bought a new Phone.", "Wczoraj kupiłem nowy telefon.", true));
+//        flashcardItems.add(new FlashcardItem("Computer", "Komputer", "Yesterday I bought a new Computer.", "Wczoraj kupiłem nowy komputer.", false));
+//        flashcardItems.add(new FlashcardItem("Tree", "Drzewo", "The lumberjack cut the tree.", "Drwal ściął drzewo.", true));
+//        flashcardItems.add(new FlashcardItem("Chives", "Szczypiorek", "These chives are too dry.", "Ten szczypiorek jest zbyt suchy.", false));
+////        flashcardItems.add(new FlashcardItem("To take a closer look", "Przyjrzeć się czemuś", "When you take a closer look it tums out he's not that happy", "Kiedy się bliżej przyjrzysz, okazuje się, że nie jest taki szczęśliwy"));
+
+
+
+    }
+
+
+    void loadUISystem(){
+
         loadFlashcard(flashcardIndex);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
@@ -148,67 +191,67 @@ public class FlashcardActivity extends AppCompatActivity {
 
     }
 
-
     void loadFlashcard(int i) {
 
         try {
-            FlashcardItem flashcardItem = currentFlashcardItems.get(i);
-            flashcardsItemLayout.removeAllViews();
-            LayoutInflater inflater = LayoutInflater.from(FlashcardActivity.this);
-            ConstraintLayout flashcard = (ConstraintLayout) inflater.inflate(R.layout.flashcard, null, false);
+                FlashcardItem flashcardItem = currentFlashcardItems.get(i);
+                flashcardsItemLayout.removeAllViews();
+                LayoutInflater inflater = LayoutInflater.from(FlashcardActivity.this);
+                ConstraintLayout flashcard = (ConstraintLayout) inflater.inflate(R.layout.flashcard, null, false);
 
-            final ConstraintLayout firstFlashcard = flashcard.findViewById(R.id.firstFlashcard);
-            final ConstraintLayout secondFlashcard = flashcard.findViewById(R.id.secondFlashcard);
-            TextView firstDescription = flashcard.findViewById(R.id.description);
-            TextView secondDescription = flashcard.findViewById(R.id.description2);
-            TextView firstWord = flashcard.findViewById(R.id.firstWord);
-            TextView secondWord = flashcard.findViewById(R.id.secondWord);
-            TextView firstIndex = flashcard.findViewById(R.id.firstIndex);
-            TextView secondIndex = flashcard.findViewById(R.id.secondIndex);
+                final ConstraintLayout firstFlashcard = flashcard.findViewById(R.id.firstFlashcard);
+                final ConstraintLayout secondFlashcard = flashcard.findViewById(R.id.secondFlashcard);
+                TextView firstDescription = flashcard.findViewById(R.id.description);
+                TextView secondDescription = flashcard.findViewById(R.id.description2);
+                TextView firstWord = flashcard.findViewById(R.id.firstWord);
+                TextView secondWord = flashcard.findViewById(R.id.secondWord);
+                TextView firstIndex = flashcard.findViewById(R.id.firstIndex);
+                TextView secondIndex = flashcard.findViewById(R.id.secondIndex);
 
-            String index = (currentFlashcardItems.indexOf(flashcardItem) + 1) + "/" + currentFlashcardItems.size();
-            firstIndex.setText(index);
-            secondIndex.setText(index);
+                String index = (currentFlashcardItems.indexOf(flashcardItem) + 1) + "/" + currentFlashcardItems.size();
+                firstIndex.setText(index);
+                secondIndex.setText(index);
 
-            firstWord.setText(flashcardItem.getFirstWord());
-            secondWord.setText(flashcardItem.getSecondWord());
-            firstDescription.setText(flashcardItem.getPaintedText(flashcardItem.getFirstDescription(), flashcardItem.getFirstWord()));
-            secondDescription.setText(flashcardItem.getPaintedText(flashcardItem.getSecondDescription(), flashcardItem.getSecondWord()));
+                firstWord.setText(flashcardItem.getFirstWord());
+                secondWord.setText(flashcardItem.getSecondWord());
+                firstDescription.setText(flashcardItem.getPaintedText(flashcardItem.getFirstDescription(), flashcardItem.getFirstWord()));
+                secondDescription.setText(flashcardItem.getPaintedText(flashcardItem.getSecondDescription(), flashcardItem.getSecondWord()));
 
 
-            flashcard.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    firstFlashcard.animate().rotationX(90).setDuration(200).setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            firstFlashcard.setVisibility(View.GONE);
-                            secondFlashcard.setRotationX(-90);
-                            secondFlashcard.setVisibility(View.VISIBLE);
-                            secondFlashcard.animate().rotationX(0).setDuration(200).setListener(null);
-                        }
-                    });
-                }
-            });
+                flashcard.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        firstFlashcard.animate().rotationX(90).setDuration(200).setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                firstFlashcard.setVisibility(View.GONE);
+                                secondFlashcard.setRotationX(-90);
+                                secondFlashcard.setVisibility(View.VISIBLE);
+                                secondFlashcard.animate().rotationX(0).setDuration(200).setListener(null);
+                            }
+                        });
+                    }
+                });
 
-            secondFlashcard.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    secondFlashcard.animate().rotationX(-90).setDuration(200).setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            secondFlashcard.setVisibility(View.GONE);
-                            firstFlashcard.setRotationX(90);
-                            firstFlashcard.setVisibility(View.VISIBLE);
-                            firstFlashcard.animate().rotationX(0).setDuration(200).setListener(null);
-                        }
-                    });
-                }
-            });
+                secondFlashcard.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        secondFlashcard.animate().rotationX(-90).setDuration(200).setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                secondFlashcard.setVisibility(View.GONE);
+                                firstFlashcard.setRotationX(90);
+                                firstFlashcard.setVisibility(View.VISIBLE);
+                                firstFlashcard.animate().rotationX(0).setDuration(200).setListener(null);
+                            }
+                        });
+                    }
+                });
 
-            flashcardsItemLayout.addView(flashcard);
+                flashcardsItemLayout.addView(flashcard);
 
         }catch (IndexOutOfBoundsException e){}
+
     }
 
 }

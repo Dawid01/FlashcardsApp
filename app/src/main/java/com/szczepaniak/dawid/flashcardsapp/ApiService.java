@@ -25,6 +25,8 @@ public interface ApiService {
     @DELETE("flashcards/{id}")
     Call<Flashcard> deleteFlashcard(@Path("id") Long id);
 
+    //////////////////////////////////////////////////////
+
     @GET("users/{id}")
     Call<User> getUser(@Path("id") Long id);
 
@@ -36,4 +38,9 @@ public interface ApiService {
 
     @GET("users/current/")
     Call<User> getCurrentUser();
+
+    //////////////////////////////////////////////////////
+
+    @GET("flashcardItems/{id}")
+    Call<FlashcardItemsList> getFlashcardItems(@Path("id") Long id);
 }

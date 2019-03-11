@@ -7,21 +7,26 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class FlashcardItem {
 
+    @SerializedName("firstWord")
+    @Expose
     private String firstWord;
+    @SerializedName("secondWord")
+    @Expose
     private String secondWord;
+    @SerializedName("firstDescription")
+    @Expose
     private String firstDescription;
+    @SerializedName("secondDescription")
+    @Expose
     private String secondDescription;
+    @SerializedName("know")
+    @Expose
     private boolean know;
-
-    public FlashcardItem(String firstWord, String secondWord, String firstDescription, String secondDescription, boolean know) {
-        this.firstWord = firstWord;
-        this.secondWord = secondWord;
-        this.firstDescription = firstDescription;
-        this.secondDescription = secondDescription;
-        this.know = know;
-    }
 
 
     public String getFirstWord() {
