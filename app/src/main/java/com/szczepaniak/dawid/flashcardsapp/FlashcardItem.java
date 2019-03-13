@@ -12,6 +12,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class FlashcardItem {
 
+    @SerializedName("id")
+    @Expose
+    private Long id;
     @SerializedName("firstWord")
     @Expose
     private String firstWord;
@@ -28,6 +31,14 @@ public class FlashcardItem {
     @Expose
     private boolean know;
 
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getFirstWord() {
         return firstWord;

@@ -105,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
                                     Intent flaschardActivity =  new Intent(MainActivity.this, FlashcardActivity.class);
                                     flaschardActivity.putExtra("FlashcardIndex", index);
                                     startActivity(flaschardActivity);
+                                    finish();
+
                                 }
                             });
 
@@ -161,9 +163,7 @@ public class MainActivity extends AppCompatActivity {
                                     return false;
                                 }
                             });
-
-
-                    }
+                        }
                 }
             }
 
@@ -249,6 +249,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        return;
+    }
 }
 
 

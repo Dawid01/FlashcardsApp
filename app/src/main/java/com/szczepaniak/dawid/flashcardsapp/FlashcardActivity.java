@@ -2,11 +2,13 @@ package com.szczepaniak.dawid.flashcardsapp;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Debug;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.TextInputEditText;
@@ -26,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -43,6 +46,7 @@ public class FlashcardActivity extends AppCompatActivity {
     private ApiService api;
     private Long flashcardId;
     private int currentFlashcardIndex = 0;
+    private int status = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,7 @@ public class FlashcardActivity extends AppCompatActivity {
                 if(response.isSuccessful()){
 
                     flashcardItems = response.body().getFlashcardItemsList();
+                    Collections.shuffle(flashcardItems);
                     currentFlashcardItems = new ArrayList<>();
                     currentFlashcardItems = flashcardItems;
                     loadUISystem();
@@ -94,27 +99,16 @@ public class FlashcardActivity extends AppCompatActivity {
                 switch (tabName){
 
                     case "all":
-                        currentFlashcardItems = flashcardItems;
+                        status = 0;
                         break;
                     case "lerned":
-                        currentFlashcardItems = new ArrayList<>();
-                        for(FlashcardItem flashcard : flashcardItems){
-                            if(flashcard.isKnow()){
-                                currentFlashcardItems.add(flashcard);
-                            }
-                        }
-
+                        status = 1;
                         break;
                     case "unlerned":
-                        currentFlashcardItems = new ArrayList<>();
-                        for(FlashcardItem flashcard : flashcardItems){
-                            if(!flashcard.isKnow()){
-                                currentFlashcardItems.add(flashcard);
-                            }
-                        }
+                        status = 2;
                         break;
                 }
-
+                update(status);
                 loadFlashcard(0);
 
             }
@@ -136,23 +130,76 @@ public class FlashcardActivity extends AppCompatActivity {
         know.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadFlashcard(++flashcardIndex);
-                if(flashcardIndex < 0){
-                    flashcardIndex = 0;
-                }else if(flashcardIndex > currentFlashcardItems.size()-1){
-                    flashcardIndex = currentFlashcardItems.size()-1;
+
+                try {
+                    FlashcardItem flashcardItem = currentFlashcardItems.get(currentFlashcardIndex);
+                    flashcardItem.setKnow(true);
+                    long id = flashcardItem.getId();
+                    Call<FlashcardItem> flashcardItemCall = api.updateFlashcardItem(id, flashcardItem);
+
+                    flashcardItemCall.enqueue(new Callback<FlashcardItem>() {
+                        @Override
+                        public void onResponse(Call<FlashcardItem> call, Response<FlashcardItem> response) {
+
+                            if (response.isSuccessful()) {
+                                update(status);
+                                loadFlashcard(++flashcardIndex);
+                                if (flashcardIndex < 0) {
+                                    flashcardIndex = 0;
+                                } else if (flashcardIndex > currentFlashcardItems.size() - 1) {
+                                    flashcardIndex = 0;
+                                    loadFlashcard(0);
+                                }
+                            }
+                        }
+
+
+                        @Override
+                        public void onFailure(Call<FlashcardItem> call, Throwable t) {
+                            Log.e("flashcardItem", "ERROR", t);
+                        }
+                    });
+                }catch (IndexOutOfBoundsException e){
+                    flashcardsItemLayout.removeAllViews();
                 }
+
             }
         });
 
         dontKnow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadFlashcard(--flashcardIndex);
-                if(flashcardIndex < 0){
-                    flashcardIndex = 0;
-                }else if(flashcardIndex > currentFlashcardItems.size()-1){
-                    flashcardIndex = currentFlashcardItems.size()-1;
+
+                try {
+                    FlashcardItem flashcardItem = currentFlashcardItems.get(currentFlashcardIndex);
+                    flashcardItem.setKnow(false);
+                    long id = flashcardItem.getId();
+                    Call<FlashcardItem> flashcardItemCall = api.updateFlashcardItem(id, flashcardItem);
+
+                    flashcardItemCall.enqueue(new Callback<FlashcardItem>() {
+                        @Override
+                        public void onResponse(Call<FlashcardItem> call, Response<FlashcardItem> response) {
+
+                            if (response.isSuccessful()) {
+                                update(status);
+                                loadFlashcard(++flashcardIndex);
+                                if (flashcardIndex < 0) {
+                                    flashcardIndex = 0;
+                                } else if (flashcardIndex > currentFlashcardItems.size() - 1) {
+                                    flashcardIndex = 0;
+                                    loadFlashcard(0);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<FlashcardItem> call, Throwable t) {
+                            Log.e("flashcardItem", "ERROR", t);
+                        }
+                    });
+                }catch (IndexOutOfBoundsException e){
+
+                    flashcardsItemLayout.removeAllViews();
                 }
             }
         });
@@ -256,7 +303,13 @@ public class FlashcardActivity extends AppCompatActivity {
         secondIndex.setText(index);
 
         firstWord.setText(flashcardItem.getFirstWord());
+        if(flashcardItem.getFirstWord().length() > 14){
+            firstWord.setTextSize(30);
+        }
         secondWord.setText(flashcardItem.getSecondWord());
+        if(flashcardItem.getSecondWord().length() > 14){
+            secondWord.setTextSize(30);
+        }
         firstDescription.setText(flashcardItem.getPaintedText(flashcardItem.getFirstDescription(), flashcardItem.getFirstWord()));
         secondDescription.setText(flashcardItem.getPaintedText(flashcardItem.getSecondDescription(), flashcardItem.getSecondWord()));
 
@@ -292,6 +345,39 @@ public class FlashcardActivity extends AppCompatActivity {
         });
 
         flashcardsItemLayout.addView(flashcard);
+    }
+
+    void update(int i){
+
+        switch (i){
+            case 0:
+                currentFlashcardItems = flashcardItems;
+                break;
+            case 1:
+                updateCurrentFlashcards(true);
+                break;
+            case 2:
+                updateCurrentFlashcards(false);
+                break;
+        }
+    }
+
+    void updateCurrentFlashcards(boolean know){
+
+        currentFlashcardItems = new ArrayList<>();
+        for(FlashcardItem flashcard : flashcardItems){
+            if(flashcard.isKnow() == know){
+                currentFlashcardItems.add(flashcard);
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent =  new Intent(FlashcardActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+        return;
     }
 
 }
